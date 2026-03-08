@@ -1,0 +1,27 @@
+# Oxford Suites — Enerpro SFTP sync crontab
+# ============================================
+# Install with:  crontab -e   (as the deploy user, e.g. "oxford")
+# Verify with:   crontab -l
+#
+# Runs every 2 hours from 00:30 to 06:30.
+# Enerpro gateways typically drop files around 02:00–02:16.
+# If by 08:00 both files still haven't arrived, the 06:30 run
+# will have marked the data stale and the dashboard shows a banner.
+#
+# After a successful sync the script writes latest.json and exits.
+# On subsequent runs it detects the file is unchanged (MD5 check)
+# and skips re-parsing — so safe to run more often if needed.
+#
+# ┌─────── minute  (0–59)
+# │ ┌──── hour    (0–23)
+# │ │ ┌─── day of month
+# │ │ │ ┌─ month
+# │ │ │ │ ┌ day of week
+# │ │ │ │ │
+  30 0,2,4,6 * * *  /home/oxford/oxford-sync/venv/bin/python3 /home/oxford/oxford-sync/sync.py >> /home/oxford/oxford-sync/sync.log 2>&1
+
+# Optional: force a manual refresh at noon in case of late delivery
+  0  12      * * *  /home/oxford/oxford-sync/venv/bin/python3 /home/oxford/oxford-sync/sync.py --force >> /home/oxford/oxford-sync/sync.log 2>&1
+
+# Rotate log weekly so it doesn't grow unbounded
+  0  3       * * 0  cp /home/oxford/oxford-sync/sync.log /home/oxford/oxford-sync/sync.log.$(date +\%Y\%m\%d) && truncate -s 0 /home/oxford/oxford-sync/sync.log
