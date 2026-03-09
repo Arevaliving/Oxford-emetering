@@ -120,9 +120,9 @@ def is_todays_file(filename):
         return False
 
 
-def download_csv(sftp, filename, local_path):
+def download_csv(sftp, filename, local_path, remote_dir=None):
     """Download file only if it has changed (hash check)."""
-    remote_path = SFTP_REMOTE_DIR + filename
+    remote_path = (remote_dir or SFTP_REMOTE_DIR) + filename
     tmp_path = local_path.with_suffix(".tmp")
     sftp.get(remote_path, str(tmp_path))
 
@@ -336,7 +336,7 @@ def run(force=False):
 
             local_path = ARCHIVE_DIR / latest
             try:
-                changed = download_csv(sftp, latest, local_path)
+                changed = download_csv(sftp, latest, local_path, remote_dir)
             except Exception as e:
                 log.error(f"  Download failed for {latest}: {e}")
                 continue
