@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oxford Suites · Water Dashboard</title>
+  <title>Oxford Suites Â· Water Dashboard</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #020810; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -32,7 +32,7 @@ const LOGO = "data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJ
 // Seeded with last-known data so the dashboard never shows empty
 const SEED_UNITS = __PAYLOAD__.units || [];
 
-const MONTHS = ["Oct '25","Nov '25","Dec '25","Jan '26","Feb '26","Mar '26 ★"];
+const MONTHS = ["Oct '25","Nov '25","Dec '25","Jan '26","Feb '26","Mar '26 â"];
 const FLOORS = [1,2,3,4,5,6];
 const DEFAULT_CFG = { dhwRate:5.25, dcwRate:1.87, anomalyMult:3.0,
   buildingName:"Areva Living - Oxford Suites, North Vancouver" };
@@ -48,21 +48,21 @@ function getStatus(u) {
   return active ? "active" : "vacant";
 }
 const KNOWN_ANOMALIES = {
-  "308":"DCW Nov '25 spike: 16.8 m³ (10× normal) — resolved or valve event",
-  "317":"DCW Dec '25 spike: 15.5 m³ — check riser valve",
-  "322":"DCW Jan '26: 16.7 m³ — significantly above building average",
-  "324":"DCW Jan '26: 12.6 m³ — elevated, monitor",
-  "605":"DHW Jan '26: 12.2 m³ — highest in building, verify occupancy",
-  "608":"DCW Jan '26: 9.0 m³ — elevated, monitor",
-  "221":"DCW Dec '25 spike: 20.1 m³ — potential leak or valve event",
+  "308":"DCW Nov '25 spike: 16.8 mÂ³ (10Ã normal) â resolved or valve event",
+  "317":"DCW Dec '25 spike: 15.5 mÂ³ â check riser valve",
+  "322":"DCW Jan '26: 16.7 mÂ³ â significantly above building average",
+  "324":"DCW Jan '26: 12.6 mÂ³ â elevated, monitor",
+  "605":"DHW Jan '26: 12.2 mÂ³ â highest in building, verify occupancy",
+  "608":"DCW Jan '26: 9.0 mÂ³ â elevated, monitor",
+  "221":"DCW Dec '25 spike: 20.1 mÂ³ â potential leak or valve event",
 };
-const fv = v => v!=null ? v.toFixed(3) : "—";
+const fv = v => v!=null ? v.toFixed(3) : "â";
 const fc = (dh,dc,cfg) => `$${(dh*cfg.dhwRate+dc*cfg.dcwRate).toFixed(2)}`;
 const pctChange = (a,b) => b>0.05 ? ((a-b)/b*100).toFixed(0) : null;
 const TT = {contentStyle:{background:"#0a0f1a",border:"1px solid #1e3050",borderRadius:8,fontSize:11,color:"#94a3b8"},itemStyle:{color:"#cbd5e1"}};
 
 const Badge = ({s}) => {
-  const map = {active:["#10b981","#052e16","Active"],vacant:["#3b82f6","#0c1a3a","Vacant"],anomaly:["#f59e0b","#2d1a00","⚠ Anomaly"]};
+  const map = {active:["#10b981","#052e16","Active"],vacant:["#3b82f6","#0c1a3a","Vacant"],anomaly:["#f59e0b","#2d1a00","â  Anomaly"]};
   const [color,bg,label] = map[s]||map.active;
   return <span style={{background:bg,color,border:`1px solid ${color}40`,borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:600,letterSpacing:"0.02em"}}>{label}</span>;
 };
@@ -84,7 +84,7 @@ const Spark = ({vals,color}) => {
   </svg>;
 };
 
-export default function Dashboard() {
+function Dashboard() {
   const [tab,setTab] = useState("overview");
   const [cfg,setCfg] = useState(DEFAULT_CFG);
   const cfgDraft = useRef({...DEFAULT_CFG});
@@ -97,7 +97,7 @@ export default function Dashboard() {
   const [sortDir,setSortDir] = useState(-1);
   const [selDay,setSelDay] = useState(null); // selected day in daily chart
 
-  // ── Live data ─────────────────────────────────────────────────
+  // ââ Live data âââââââââââââââââââââââââââââââââââââââââââââââââ
   const [units, setUnits] = useState(SEED_UNITS);
   const [dataStatus, setDataStatus] = useState({ status: __PAYLOAD__.status||"seed", stale: !!__PAYLOAD__.stale, stale_since:null, last_sync:__PAYLOAD__.last_sync||null, generated_at:__PAYLOAD__.generated_at||null });
 
@@ -150,7 +150,7 @@ export default function Dashboard() {
   },[enriched,search,floorF,occF,sortKey,sortDir]);
 
   const onSort=key=>{ if(sortKey===key) setSortDir(d=>-d); else{setSortKey(key);setSortDir(-1);} };
-  const SH=({k})=><span style={{opacity:sortKey===k?1:0.25,fontSize:10}}>{sortKey===k?(sortDir===-1?"↓":"↑"):"⇅"}</span>;
+  const SH=({k})=><span style={{opacity:sortKey===k?1:0.25,fontSize:10}}>{sortKey===k?(sortDir===-1?"â":"â"):"â"}</span>;
 
   const S = {
     page:{minHeight:"100vh",background:"#060c18",color:"#e2e8f0",fontFamily:"'IBM Plex Mono','Menlo',monospace",fontSize:13},
@@ -178,21 +178,21 @@ export default function Dashboard() {
                 {cfg.buildingName}
               </div>
               <div style={{fontSize:10,color:"#1e4570",letterSpacing:"0.06em",marginTop:2}}>
-                WATER SUBMETERING · 140 SUITES · 280 METERS
+                WATER SUBMETERING Â· 140 SUITES Â· 280 METERS
               </div>
             </div>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <div style={{textAlign:"right",fontSize:10,color:"#1e4570"}}>
               <div style={{color:"#3d6494"}}>Last sync</div>
-              <div>2026-03-05 · 02:16</div>
+              <div>2026-03-05 Â· 02:16</div>
             </div>
             <div style={{width:8,height:8,borderRadius:"50%",background:dataStatus.stale?"#f59e0b":dataStatus.status==="unknown"?"#94a3b8":"#10b981",boxShadow:`0 0 8px ${dataStatus.stale?"#f59e0b88":dataStatus.status==="unknown"?"#94a3b844":"#10b98188"}`}}/>
           </div>
         </div>
         <div style={{maxWidth:1280,margin:"0 auto",padding:"0 24px",display:"flex",gap:2}}>
           {[{id:"overview",label:"Overview"},{id:"units",label:`Units (${units.length})`},
-            {id:"alerts",label:`Alerts${Object.keys(KNOWN_ANOMALIES).length>0?` · ${Object.keys(KNOWN_ANOMALIES).length}`:""}`},
+            {id:"alerts",label:`Alerts${Object.keys(KNOWN_ANOMALIES).length>0?` Â· ${Object.keys(KNOWN_ANOMALIES).length}`:""}`},
             {id:"settings",label:"Settings"}].map(t=>(
             <button key={t.id} style={tabStyle(tab===t.id)} onClick={()=>setTab(t.id)}>{t.label}</button>
           ))}
@@ -201,16 +201,16 @@ export default function Dashboard() {
 
       {dataStatus.stale && (
         <div style={{background:"#1a0e00",borderBottom:"1px solid #92400e60",padding:"10px 24px",display:"flex",alignItems:"center",gap:10}}>
-          <span style={{fontSize:14}}>⚠️</span>
+          <span style={{fontSize:14}}>â ï¸</span>
           <span style={{fontSize:11,color:"#fcd34d"}}>
-            <strong>Stale data</strong> — SFTP sync has not received fresh files since {dataStatus.stale_since ? new Date(dataStatus.stale_since).toLocaleString("en-CA",{timeZone:"America/Vancouver",hour12:false}) : "unknown"}.
+            <strong>Stale data</strong> â SFTP sync has not received fresh files since {dataStatus.stale_since ? new Date(dataStatus.stale_since).toLocaleString("en-CA",{timeZone:"America/Vancouver",hour12:false}) : "unknown"}.
             Last successful sync: {dataStatus.last_sync ? new Date(dataStatus.last_sync).toLocaleString("en-CA",{timeZone:"America/Vancouver",hour12:false}) : "never"}.
           </span>
         </div>
       )}
       {dataStatus.status==="unknown" && !dataStatus.stale && (
         <div style={{background:"#0a1628",borderBottom:"1px solid #1e3050",padding:"8px 24px"}}>
-          <span style={{fontSize:11,color:"#64748b"}}>⟳ Live data unavailable — showing cached readings</span>
+          <span style={{fontSize:11,color:"#64748b"}}>â³ Live data unavailable â showing cached readings</span>
         </div>
       )}
       <div style={{maxWidth:1280,margin:"0 auto",padding:"28px 24px"}}>
@@ -228,28 +228,28 @@ export default function Dashboard() {
               <div style={kpiStyle("#f97316")}>
                 <span style={{fontSize:10,color:"#7c3410",letterSpacing:"0.1em",textTransform:"uppercase"}}>Total DHW</span>
                 <span style={{fontSize:28,fontWeight:700,color:"#fdba74",letterSpacing:-1}}>{totalDHW.toFixed(2)}</span>
-                <span style={{fontSize:10,color:"#7c3410"}}>m³ · {MONTHS[monthIdx]}</span>
+                <span style={{fontSize:10,color:"#7c3410"}}>mÂ³ Â· {MONTHS[monthIdx]}</span>
               </div>
               <div style={kpiStyle("#7aa8c7")}>
                 <span style={{fontSize:10,color:"#0c4a6e",letterSpacing:"0.1em",textTransform:"uppercase"}}>Total DCW</span>
                 <span style={{fontSize:28,fontWeight:700,color:"#bdd8ea",letterSpacing:-1}}>{totalDCW.toFixed(2)}</span>
-                <span style={{fontSize:10,color:"#0c4a6e"}}>m³ · {MONTHS[monthIdx]}</span>
+                <span style={{fontSize:10,color:"#0c4a6e"}}>mÂ³ Â· {MONTHS[monthIdx]}</span>
               </div>
               <div style={kpiStyle("#8b5cf6")}>
                 <span style={{fontSize:10,color:"#3b0764",letterSpacing:"0.1em",textTransform:"uppercase"}}>Est. Cost</span>
                 <span style={{fontSize:28,fontWeight:700,color:"#c4b5fd",letterSpacing:-1}}>${totalCost.toFixed(0)}</span>
-                <span style={{fontSize:10,color:"#3b0764"}}>DHW ${cfg.dhwRate}/m³ · DCW ${cfg.dcwRate}/m³</span>
+                <span style={{fontSize:10,color:"#3b0764"}}>DHW ${cfg.dhwRate}/mÂ³ Â· DCW ${cfg.dcwRate}/mÂ³</span>
               </div>
               <div style={kpiStyle(Object.keys(KNOWN_ANOMALIES).length>0?"#f59e0b":"#10b981")}>
                 <span style={{fontSize:10,color:Object.keys(KNOWN_ANOMALIES).length>0?"#78350f":"#064e3b",letterSpacing:"0.1em",textTransform:"uppercase"}}>Status</span>
                 <span style={{fontSize:28,fontWeight:700,color:Object.keys(KNOWN_ANOMALIES).length>0?"#fcd34d":"#34d399",letterSpacing:-1}}>{units.length}/{units.length}</span>
-                <span style={{fontSize:10,color:"#1e4570"}}>{activeUnits.length} active · {vacantUnits.length} vacant · {Object.keys(KNOWN_ANOMALIES).length} anomalies</span>
+                <span style={{fontSize:10,color:"#1e4570"}}>{activeUnits.length} active Â· {vacantUnits.length} vacant Â· {Object.keys(KNOWN_ANOMALIES).length} anomalies</span>
               </div>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:"1.6fr 1fr",gap:18}}>
               <div style={S.card}>
-                <div style={{fontSize:10,color:"#1e4570",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:16}}>6-Month Building Trend · m³/period</div>
+                <div style={{fontSize:10,color:"#1e4570",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:16}}>6-Month Building Trend Â· mÂ³/period</div>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={trendData} barGap={2}>
                     <CartesianGrid strokeDasharray="2 4" stroke="#0f2040" vertical={false}/>
@@ -263,7 +263,7 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </div>
               <div style={S.card}>
-                <div style={{fontSize:10,color:"#1e4570",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:16}}>{MONTHS[monthIdx]} · m³ by Floor</div>
+                <div style={{fontSize:10,color:"#1e4570",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:16}}>{MONTHS[monthIdx]} Â· mÂ³ by Floor</div>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={floorData} layout="vertical">
                     <CartesianGrid strokeDasharray="2 4" stroke="#0f2040" horizontal={false}/>
@@ -279,7 +279,7 @@ export default function Dashboard() {
             </div>
 
             <div style={S.card}>
-              <div style={{fontSize:10,color:"#1e4570",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:14}}>Top Consumers · {MONTHS[monthIdx]}</div>
+              <div style={{fontSize:10,color:"#1e4570",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:14}}>Top Consumers Â· {MONTHS[monthIdx]}</div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:12}}>
                 {[...enriched].sort((a,b)=>(b.dhw+b.dcw)-(a.dhw+a.dcw)).slice(0,5).map(u=>(
                   <div key={u.u} style={{background:"#060c18",borderRadius:8,padding:"12px 14px",border:"1px solid #0f2040",cursor:"pointer"}}
@@ -287,8 +287,8 @@ export default function Dashboard() {
                     <div style={{fontSize:16,fontWeight:700,color:"#7aa8c7",letterSpacing:-0.5}}>#{u.u}</div>
                     <div style={{fontSize:10,color:"#3d6494",marginTop:2}}>Level {u.f}</div>
                     <div style={{marginTop:8,display:"flex",flexDirection:"column",gap:3}}>
-                      <div style={{fontSize:11,color:"#fdba74"}}>🔥 {fv(u.dhw)} m³</div>
-                      <div style={{fontSize:11,color:"#bdd8ea"}}>💧 {fv(u.dcw)} m³</div>
+                      <div style={{fontSize:11,color:"#fdba74"}}>ð¥ {fv(u.dhw)} mÂ³</div>
+                      <div style={{fontSize:11,color:"#bdd8ea"}}>ð§ {fv(u.dcw)} mÂ³</div>
                     </div>
                     <div style={{marginTop:8,fontSize:10,color:"#c4b5fd"}}>{fc(u.dhw,u.dcw,cfg)}</div>
                     <div style={{marginTop:6}}><Badge s={u.status}/></div>
@@ -322,7 +322,7 @@ export default function Dashboard() {
                 <table style={{width:"100%",borderCollapse:"collapse",minWidth:700}}>
                   <thead>
                     <tr style={{borderBottom:"1px solid #0f2040"}}>
-                      {[["unit","Unit"],["floor","Flr"],["status","Status"],["dhw","DHW m³"],["dcw","DCW m³"],["cost","Cost"],["trend","Trend"],["vs","vs Prev"]].map(([k,l])=>(
+                      {[["unit","Unit"],["floor","Flr"],["status","Status"],["dhw","DHW mÂ³"],["dcw","DCW mÂ³"],["cost","Cost"],["trend","Trend"],["vs","vs Prev"]].map(([k,l])=>(
                         <th key={k} style={{...S.th,cursor:"pointer"}} onClick={()=>["unit","dhw","dcw","cost"].includes(k)&&onSort(k)}>
                           {l} {["unit","dhw","dcw","cost"].includes(k)&&<SH k={k}/>}
                         </th>
@@ -336,20 +336,20 @@ export default function Dashboard() {
                       return (
                         <tr key={u.u} onClick={()=>{setSelUnit(isSel?null:u.u);setSelDay(null);}}
                           style={{background:isSel?"#0e2d50":u.status==="anomaly"?"#1a0e00":u.status==="vacant"?"#050d1a":"transparent",borderLeft:isSel?"2px solid #7aa8c7":"2px solid transparent",cursor:"pointer",transition:"background 0.1s"}}>
-                          <td style={S.td}><span style={{fontWeight:700,color:"#7aa8c7",fontSize:13}}>{u.u}</span>{anomNote&&<span style={{marginLeft:6,fontSize:9,color:"#f59e0b"}}>⚠</span>}</td>
+                          <td style={S.td}><span style={{fontWeight:700,color:"#7aa8c7",fontSize:13}}>{u.u}</span>{anomNote&&<span style={{marginLeft:6,fontSize:9,color:"#f59e0b"}}>â </span>}</td>
                           <td style={{...S.td,color:"#3d6494"}}>Lv{u.f}</td>
                           <td style={S.td}><Badge s={u.status}/></td>
                           <td style={{...S.td,color:"#fdba74",fontWeight:600}}>{fv(u.dhw)}</td>
                           <td style={{...S.td,color:"#bdd8ea",fontWeight:600}}>{fv(u.dcw)}</td>
-                          <td style={{...S.td,color:"#c4b5fd"}}>{u.cost>0?`$${u.cost.toFixed(2)}`:"—"}</td>
+                          <td style={{...S.td,color:"#c4b5fd"}}>{u.cost>0?`$${u.cost.toFixed(2)}`:"â"}</td>
                           <td style={S.td}><Spark vals={u.dh.map((v,i)=>v+u.dc[i])} color="#7aa8c7"/></td>
-                          <td style={S.td}>{u.chg!==null?(<span style={{color:+u.chg>15?"#f59e0b":+u.chg>0?"#f97316":"#10b981",fontSize:11,fontWeight:600}}>{+u.chg>0?"+":""}{u.chg}%</span>):<span style={{color:"#1e4570"}}>—</span>}</td>
+                          <td style={S.td}>{u.chg!==null?(<span style={{color:+u.chg>15?"#f59e0b":+u.chg>0?"#f97316":"#10b981",fontSize:11,fontWeight:600}}>{+u.chg>0?"+":""}{u.chg}%</span>):<span style={{color:"#1e4570"}}>â</span>}</td>
                         </tr>
                       );
                     })}
                   </tbody>
                 </table>
-                <div style={{padding:"10px 16px",fontSize:10,color:"#1e4570",borderTop:"1px solid #0f2040"}}>{tableUnits.length} units · {MONTHS[monthIdx]}</div>
+                <div style={{padding:"10px 16px",fontSize:10,color:"#1e4570",borderTop:"1px solid #0f2040"}}>{tableUnits.length} units Â· {MONTHS[monthIdx]}</div>
               </div>
             </div>
 
@@ -359,13 +359,13 @@ export default function Dashboard() {
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
                     <div>
                       <div style={{fontSize:22,fontWeight:700,color:"#7aa8c7",letterSpacing:-1}}>Unit {sel.u}</div>
-                      <div style={{fontSize:10,color:"#1e4570",marginTop:2}}>Level {sel.f} · Last read {sel.lr}</div>
+                      <div style={{fontSize:10,color:"#1e4570",marginTop:2}}>Level {sel.f} Â· Last read {sel.lr}</div>
                     </div>
-                    <button onClick={()=>setSelUnit(null)} style={{background:"none",border:"none",color:"#1e4570",fontSize:16,cursor:"pointer",padding:4}}>✕</button>
+                    <button onClick={()=>setSelUnit(null)} style={{background:"none",border:"none",color:"#1e4570",fontSize:16,cursor:"pointer",padding:4}}>â</button>
                   </div>
                   <Badge s={enriched.find(u=>u.u===sel.u)?.status||"vacant"}/>
                   {KNOWN_ANOMALIES[sel.u]&&(
-                    <div style={{marginTop:12,background:"#1a0e00",border:"1px solid #92400e40",borderRadius:8,padding:"10px 12px",fontSize:11,color:"#fcd34d",lineHeight:1.5}}>⚠ {KNOWN_ANOMALIES[sel.u]}</div>
+                    <div style={{marginTop:12,background:"#1a0e00",border:"1px solid #92400e40",borderRadius:8,padding:"10px 12px",fontSize:11,color:"#fcd34d",lineHeight:1.5}}>â  {KNOWN_ANOMALIES[sel.u]}</div>
                   )}
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:14}}>
                     {[{label:"DHW",serial:sel.dh_s,color:"#f97316",bg:"#1c0800",val:enriched.find(u=>u.u===sel.u)?.dhw||0},
@@ -373,22 +373,22 @@ export default function Dashboard() {
                       <div key={m.label} style={{background:m.bg,borderRadius:8,padding:"12px",border:`1px solid ${m.color}30`}}>
                         <div style={{fontSize:9,color:m.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:6}}>{m.label} Meter</div>
                         <div style={{fontSize:18,fontWeight:700,color:m.color}}>{fv(m.val)}</div>
-                        <div style={{fontSize:9,color:"#1e4570",marginTop:2}}>m³/{MONTHS[monthIdx]}</div>
+                        <div style={{fontSize:9,color:"#1e4570",marginTop:2}}>mÂ³/{MONTHS[monthIdx]}</div>
                         <div style={{fontSize:9,color:"#1e4570",marginTop:4,wordBreak:"break-all"}}>s/n {m.serial}</div>
                       </div>
                     ))}
                   </div>
                   <div style={{marginTop:16}}>
                     <div style={{fontSize:9,color:"#1e4570",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:4}}>Monthly Consumption</div>
-                    <div style={{fontSize:8,color:"#1e4570",marginBottom:6}}>★ Mar = 5 days MTD</div>
+                    <div style={{fontSize:8,color:"#1e4570",marginBottom:6}}>â Mar = 5 days MTD</div>
                     <ResponsiveContainer width="100%" height={90}>
                       <BarChart data={MONTHS.map((m,i)=>({m:m.replace(" '26","").replace(" '25",""),dhw:sel.dh[i],dcw:sel.dc[i]}))} barGap={1}>
                         <CartesianGrid strokeDasharray="2 4" stroke="#0f2040" vertical={false}/>
                         <XAxis dataKey="m" tick={{fontSize:7,fill:"#3d6494"}} axisLine={false} tickLine={false}/>
                         <YAxis tick={{fontSize:8,fill:"#3d6494"}} axisLine={false} tickLine={false} width={28}/>
                         <Tooltip {...TT} contentStyle={{...TT.contentStyle,fontSize:10}}/>
-                        <Bar dataKey="dhw" fill="#f97316" name="DHW m³" radius={[2,2,0,0]}/>
-                        <Bar dataKey="dcw" fill="#7aa8c7" name="DCW m³" radius={[2,2,0,0]}/>
+                        <Bar dataKey="dhw" fill="#f97316" name="DHW mÂ³" radius={[2,2,0,0]}/>
+                        <Bar dataKey="dcw" fill="#7aa8c7" name="DCW mÂ³" radius={[2,2,0,0]}/>
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -422,10 +422,10 @@ export default function Dashboard() {
                     return(
                     <div style={{marginTop:12}}>
                       <div style={{fontSize:9,color:"#1e4570",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:4,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                        <span>Daily Consumption · {firstDate.slice(5)} → {lastDate.slice(5)}</span>
+                        <span>Daily Consumption Â· {firstDate.slice(5)} â {lastDate.slice(5)}</span>
                         <span style={{color:"#0f2a50",fontSize:8}}>{dailyEntries.length} days</span>
                       </div>
-                      {/* Bar chart — click bar to select day */}
+                      {/* Bar chart â click bar to select day */}
                       <ResponsiveContainer width="100%" height={90}>
                         <BarChart data={dailyChartData} barCategoryGap="15%" barGap={1}
                           onClick={e=>e&&e.activePayload&&setSelDay(e.activePayload[0]?.payload?.full)}
@@ -433,7 +433,7 @@ export default function Dashboard() {
                           <CartesianGrid strokeDasharray="2 4" stroke="#0f2040" vertical={false}/>
                           <XAxis dataKey="d" tick={{fontSize:6,fill:"#3d6494"}} axisLine={false} tickLine={false} interval={1}/>
                           <YAxis tick={{fontSize:7,fill:"#3d6494"}} axisLine={false} tickLine={false} width={24}/>
-                          <Tooltip {...TT} contentStyle={{...TT.contentStyle,fontSize:9}} formatter={(v,n)=>[v.toFixed(4)+' m³',n==='dhw'?'DHW':'DCW']}/>
+                          <Tooltip {...TT} contentStyle={{...TT.contentStyle,fontSize:9}} formatter={(v,n)=>[v.toFixed(4)+' mÂ³',n==='dhw'?'DHW':'DCW']}/>
                           <Bar dataKey="dhw" stackId="a" name="dhw" radius={[0,0,0,0]}
                             fill="#f97316"
                             isAnimationActive={false}>
@@ -454,12 +454,12 @@ export default function Dashboard() {
                       <div style={{display:"flex",alignItems:"center",gap:6,marginTop:8,background:"#06101e",borderRadius:8,padding:"8px 10px",border:"1px solid #0f2040"}}>
                         <button onClick={()=>setSelDay(dailyChartData[Math.max(0,activeDayIdx-1)].full)}
                           disabled={activeDayIdx===0}
-                          style={{background:"none",border:"1px solid #1e4570",borderRadius:4,color:activeDayIdx===0?"#1e3050":"#7aa8c7",cursor:activeDayIdx===0?"default":"pointer",padding:"2px 7px",fontSize:13,lineHeight:1}}>‹</button>
+                          style={{background:"none",border:"1px solid #1e4570",borderRadius:4,color:activeDayIdx===0?"#1e3050":"#7aa8c7",cursor:activeDayIdx===0?"default":"pointer",padding:"2px 7px",fontSize:13,lineHeight:1}}>â¹</button>
                         <div style={{flex:1,textAlign:"center"}}>
                           <div style={{fontSize:11,fontWeight:700,color:"#93c5fd"}}>{activeDay.full}</div>
                           <div style={{display:"flex",justifyContent:"center",gap:14,marginTop:4,fontSize:10}}>
-                            <span style={{color:"#fdba74"}}>DHW <b>{activeDay.dhw.toFixed(4)}</b> m³</span>
-                            <span style={{color:"#bdd8ea"}}>DCW <b>{activeDay.dcw.toFixed(4)}</b> m³</span>
+                            <span style={{color:"#fdba74"}}>DHW <b>{activeDay.dhw.toFixed(4)}</b> mÂ³</span>
+                            <span style={{color:"#bdd8ea"}}>DCW <b>{activeDay.dcw.toFixed(4)}</b> mÂ³</span>
                             <span style={{color:"#c4b5fd"}}>Cost <b>${((activeDay.dhw*dhwRate)+(activeDay.dcw*dcwRate)).toFixed(2)}</b></span>
                           </div>
                           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:3,fontSize:9,color:"#1e4570"}}>
@@ -469,21 +469,21 @@ export default function Dashboard() {
                         </div>
                         <button onClick={()=>setSelDay(dailyChartData[Math.min(dailyChartData.length-1,activeDayIdx+1)].full)}
                           disabled={activeDayIdx===dailyChartData.length-1}
-                          style={{background:"none",border:"1px solid #1e4570",borderRadius:4,color:activeDayIdx===dailyChartData.length-1?"#1e3050":"#7aa8c7",cursor:activeDayIdx===dailyChartData.length-1?"default":"pointer",padding:"2px 7px",fontSize:13,lineHeight:1}}>›</button>
+                          style={{background:"none",border:"1px solid #1e4570",borderRadius:4,color:activeDayIdx===dailyChartData.length-1?"#1e3050":"#7aa8c7",cursor:activeDayIdx===dailyChartData.length-1?"default":"pointer",padding:"2px 7px",fontSize:13,lineHeight:1}}>âº</button>
                       </div>
                       {/* Summary stats */}
                       <div style={{display:"flex",gap:12,marginTop:6,fontSize:9,color:"#1e4570"}}>
-                        <span>Avg: <span style={{color:"#f97316"}}>{avgDhw.toFixed(3)}</span>+<span style={{color:"#7aa8c7"}}>{avgDcw.toFixed(3)}</span> m³/day</span>
-                        <span style={{marginLeft:"auto"}}>Peak: <span style={{color:"#c4b5fd"}}>{peakRow.total.toFixed(3)} m³</span> on {peakRow.d}</span>
+                        <span>Avg: <span style={{color:"#f97316"}}>{avgDhw.toFixed(3)}</span>+<span style={{color:"#7aa8c7"}}>{avgDcw.toFixed(3)}</span> mÂ³/day</span>
+                        <span style={{marginLeft:"auto"}}>Peak: <span style={{color:"#c4b5fd"}}>{peakRow.total.toFixed(3)} mÂ³</span> on {peakRow.d}</span>
                       </div>
                     </div>
                   );})()}
                   <div style={{marginTop:14,background:"#060c18",borderRadius:8,padding:"12px 14px",border:"1px solid #0f2040"}}>
-                    <div style={{fontSize:9,color:"#1e4570",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8}}>Cost · {MONTHS[monthIdx]}</div>
+                    <div style={{fontSize:9,color:"#1e4570",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8}}>Cost Â· {MONTHS[monthIdx]}</div>
                     {[{label:"DHW",val:enriched.find(u=>u.u===sel.u)?.dhw||0,rate:cfg.dhwRate,color:"#fdba74"},
                       {label:"DCW",val:enriched.find(u=>u.u===sel.u)?.dcw||0,rate:cfg.dcwRate,color:"#bdd8ea"}].map(r=>(
                       <div key={r.label} style={{display:"flex",justifyContent:"space-between",fontSize:11,color:r.color,marginBottom:4}}>
-                        <span>{r.label} {fv(r.val)} m³ × ${r.rate}</span>
+                        <span>{r.label} {fv(r.val)} mÂ³ Ã ${r.rate}</span>
                         <span style={{fontWeight:700}}>${(r.val*r.rate).toFixed(2)}</span>
                       </div>
                     ))}
@@ -494,7 +494,7 @@ export default function Dashboard() {
                   </div>
                   {enriched.find(u=>u.u===sel.u)?.status==="vacant"&&(
                     <div style={{marginTop:12,background:"#030b1c",border:"1px solid #1e3a8a40",borderRadius:8,padding:"10px 12px",fontSize:11,color:"#93c5fd",lineHeight:1.5}}>
-                      📋 Vacant unit — low or zero consumption detected.
+                      ð Vacant unit â low or zero consumption detected.
                     </div>
                   )}
                 </div>
@@ -507,13 +507,13 @@ export default function Dashboard() {
           <div style={{maxWidth:760}}>
             {Object.keys(KNOWN_ANOMALIES).length>0&&(
               <div style={{marginBottom:24}}>
-                <div style={{fontSize:10,color:"#92400e",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:12,fontWeight:700}}>⚠ Consumption Anomalies · Detected in Historical Data</div>
+                <div style={{fontSize:10,color:"#92400e",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:12,fontWeight:700}}>â  Consumption Anomalies Â· Detected in Historical Data</div>
                 <div style={{display:"flex",flexDirection:"column",gap:10}}>
                   {Object.entries(KNOWN_ANOMALIES).map(([unit,note])=>{
                     const u=enriched.find(x=>x.u===unit);
                     return (
                       <div key={unit} style={{background:"#110800",border:"1px solid #92400e40",borderRadius:10,padding:"16px 18px",display:"flex",alignItems:"flex-start",gap:14}}>
-                        <span style={{fontSize:22,flexShrink:0}}>💧</span>
+                        <span style={{fontSize:22,flexShrink:0}}>ð§</span>
                         <div style={{flex:1}}>
                           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4}}>
                             <span style={{fontSize:15,fontWeight:700,color:"#fcd34d"}}>Unit {unit}</span>
@@ -521,12 +521,12 @@ export default function Dashboard() {
                           </div>
                           <div style={{fontSize:12,color:"#d97706",lineHeight:1.6}}>{note}</div>
                           <div style={{marginTop:8,display:"flex",gap:16,fontSize:11}}>
-                            <span style={{color:"#fdba74"}}>DHW Jan: {fv(u?.dh[4])} m³</span>
-                            <span style={{color:"#bdd8ea"}}>DCW Jan: {fv(u?.dc[4])} m³</span>
+                            <span style={{color:"#fdba74"}}>DHW Jan: {fv(u?.dh[4])} mÂ³</span>
+                            <span style={{color:"#bdd8ea"}}>DCW Jan: {fv(u?.dc[4])} mÂ³</span>
                           </div>
                         </div>
                         <button style={{...S.btn,fontSize:11,padding:"6px 12px",flexShrink:0}}
-                          onClick={()=>{setTab("units");setSelUnit(unit);setMonthIdx(4);}}>View →</button>
+                          onClick={()=>{setTab("units");setSelUnit(unit);setMonthIdx(4);}}>View â</button>
                       </div>
                     );
                   })}
@@ -538,17 +538,17 @@ export default function Dashboard() {
               if(!vact.length) return null;
               return (
                 <div>
-                  <div style={{fontSize:10,color:"#1e3a8a",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:12,fontWeight:700}}>🏠 Vacant Units with Activity in Feb/Mar</div>
+                  <div style={{fontSize:10,color:"#1e3a8a",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:12,fontWeight:700}}>ð  Vacant Units with Activity in Feb/Mar</div>
                   <div style={{display:"flex",flexDirection:"column",gap:8}}>
                     {vact.map(u=>(
                       <div key={u.u} style={{background:"#030b1c",border:"1px solid #1e3a8a40",borderRadius:10,padding:"14px 16px",display:"flex",alignItems:"center",gap:14}}>
                         <div style={{flex:1}}>
                           <span style={{fontWeight:700,color:"#93c5fd"}}>Unit {u.u}</span>
-                          <span style={{fontSize:10,color:"#1e3a8a",marginLeft:8}}>Level {u.f} · Vacant</span>
-                          <div style={{fontSize:11,color:"#3d6494",marginTop:4}}>Feb/Mar DHW {fv(u.dh[5])} m³ · DCW {fv(u.dc[5])} m³</div>
+                          <span style={{fontSize:10,color:"#1e3a8a",marginLeft:8}}>Level {u.f} Â· Vacant</span>
+                          <div style={{fontSize:11,color:"#3d6494",marginTop:4}}>Feb/Mar DHW {fv(u.dh[5])} mÂ³ Â· DCW {fv(u.dc[5])} mÂ³</div>
                         </div>
                         <button style={{...S.btn,fontSize:11,padding:"6px 12px"}}
-                          onClick={()=>{setTab("units");setSelUnit(u.u);setMonthIdx(5);}}>View →</button>
+                          onClick={()=>{setTab("units");setSelUnit(u.u);setMonthIdx(5);}}>View â</button>
                       </div>
                     ))}
                   </div>
@@ -563,7 +563,7 @@ export default function Dashboard() {
             <div style={S.card}>
               <div style={{fontSize:11,fontWeight:700,color:"#7aa8c7",letterSpacing:"0.06em",textTransform:"uppercase",marginBottom:16}}>Water Rates</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-                {[{label:"DHW Rate ($/m³)",key:"dhwRate"},{label:"DCW Rate ($/m³)",key:"dcwRate"}].map(({label,key})=>(
+                {[{label:"DHW Rate ($/mÂ³)",key:"dhwRate"},{label:"DCW Rate ($/mÂ³)",key:"dcwRate"}].map(({label,key})=>(
                   <div key={key}>
                     <div style={{fontSize:10,color:"#1e4570",marginBottom:6,textTransform:"uppercase",letterSpacing:"0.06em"}}>{label}</div>
                     <input type="number" step="0.01" defaultValue={cfg[key]} onChange={e=>cfgDraft.current[key]=parseFloat(e.target.value)||0} style={{...S.input,width:"100%"}}/>
@@ -573,7 +573,7 @@ export default function Dashboard() {
             </div>
             <div style={S.card}>
               <div style={{fontSize:11,fontWeight:700,color:"#7aa8c7",letterSpacing:"0.06em",textTransform:"uppercase",marginBottom:16}}>Anomaly Detection</div>
-              <div style={{fontSize:10,color:"#1e4570",marginBottom:6,textTransform:"uppercase",letterSpacing:"0.06em"}}>Threshold (× rolling average)</div>
+              <div style={{fontSize:10,color:"#1e4570",marginBottom:6,textTransform:"uppercase",letterSpacing:"0.06em"}}>Threshold (Ã rolling average)</div>
               <input type="number" step="0.5" defaultValue={cfg.anomalyMult} onChange={e=>cfgDraft.current.anomalyMult=parseFloat(e.target.value)||3} style={{...S.input,width:"100%"}}/>
             </div>
             <div style={S.card}>
@@ -584,12 +584,12 @@ export default function Dashboard() {
             <button style={{...S.btn,background:"#0a3a6e",borderRadius:8}} onClick={()=>setCfg({...cfg,...cfgDraft.current})}>Apply Settings</button>
             <div style={S.card}>
               <div style={{fontSize:11,fontWeight:700,color:"#7aa8c7",letterSpacing:"0.06em",textTransform:"uppercase",marginBottom:14}}>System Info</div>
-              {[["Gateways","0016044252 (East · 77 units) · 0016046347 (West · 63 units)"],
-                ["Coverage","140 of 140 suites · 280 of 280 meters reporting"],
-                ["Rates","DHW $5.25/m³ · DCW $1.87/m³ · FortisBC 2026 + DNV Bylaw 2279 (Dec 2025)"],
-                ["Data","Elvaco CMe3100 · Maddalena SJ EVO · M-Bus"],
-                ["Refresh","Daily · 02:00–02:16 · SFTP pull"],
-                ["Hosting","DigitalOcean Droplet · Nginx · HTTP Basic Auth"],
+              {[["Gateways","0016044252 (East Â· 77 units) Â· 0016046347 (West Â· 63 units)"],
+                ["Coverage","140 of 140 suites Â· 280 of 280 meters reporting"],
+                ["Rates","DHW $5.25/mÂ³ Â· DCW $1.87/mÂ³ Â· FortisBC 2026 + DNV Bylaw 2279 (Dec 2025)"],
+                ["Data","Elvaco CMe3100 Â· Maddalena SJ EVO Â· M-Bus"],
+                ["Refresh","Daily Â· 02:00â02:16 Â· SFTP pull"],
+                ["Hosting","DigitalOcean Droplet Â· Nginx Â· HTTP Basic Auth"],
               ].map(([k,v])=>(
                 <div key={k} style={{display:"flex",gap:12,marginBottom:10,fontSize:11}}>
                   <span style={{color:"#7aa8c7",fontWeight:700,minWidth:90,flexShrink:0}}>{k}</span>
