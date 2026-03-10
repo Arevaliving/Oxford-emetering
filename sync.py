@@ -35,6 +35,7 @@ BASE_DIR      = Path(__file__).parent
 METER_LIST    = BASE_DIR / "Suite-Meter_List_Oxford.xlsx"
 ARCHIVE_DIR   = BASE_DIR / "archive"
 OUTPUT_JSON   = BASE_DIR / "www" / "data" / "latest.json"
+DAILY_JSON   = BASE_DIR / "www" / "data" / "daily_history.json"
 LOG_FILE      = BASE_DIR / "sync.log"
 
 # If no new data by this hour (24h), write stale flag
@@ -244,6 +245,7 @@ def build_units(records_combined, meter_lookup):
             "dh_s":   dhw.get("s", ""),
             "dc_s":   dcw.get("s", ""),
             "lr":     dhw.get("lr") or dcw.get("lr", "N/A"),
+            "daily":  {},
         })
 
     return result
@@ -265,6 +267,44 @@ def load_meter_lookup():
     return lookup
 
 
+
+def patch_html_payload(last_sync, status='ok', stale=False):
+    """Update the __PAYLOAD__ status/last_sync/stale in index.html so the
+    correct sync time is shown immediately on page load without needing fetch."""
+    html_path = BASE_DIR / 'www' / 'index.html'
+    if not html_path.exists():
+        return
+    html = html_path.read_text(encoding='utf-8')
+    # Replace status, last_sync, stale fields inside the __PAYLOAD__ JSON blob
+    # Replace only top-level PAYLOAD fields (appear after the units array, near end of blob)
+    html = re.sub(
+        r'("status":")(seed|ok|stale|error)","stale":(true|false),"last_sync":"([^"]*)"',
+        lambda m: '"status":"' + status + '","stale":' + ('true' if stale else 'false') + ',"last_sync":"' + (last_sync or '') + '"',
+        html, count=1
+    )
+    html_path.write_text(html, encoding='utf-8')
+
+
+def update_html_payload(status, stale, last_sync):
+    """Rewrite the entire __PAYLOAD__ in index.html with fresh data from latest.json."""
+    html_path = BASE_DIR / 'www' / 'index.html'
+    json_path = OUTPUT_JSON
+    if not html_path.exists() or not json_path.exists():
+        return
+    import re as _re, json as _json
+    html = html_path.read_text(encoding='utf-8')
+    payload_data = _json.loads(json_path.read_text(encoding='utf-8'))
+    payload_js = _json.dumps(payload_data, separators=(',', ':'))
+    # Replace const __PAYLOAD__=....; with fresh data
+    new_html = _re.sub(
+        r'const __PAYLOAD__=\{.*?\};',
+        'const __PAYLOAD__=' + payload_js + ';',
+        html, count=1, flags=_re.DOTALL
+    )
+    if new_html != html:
+        html_path.write_text(new_html, encoding='utf-8')
+
+
 def write_output(units, status, stale=False, stale_since=None, last_sync=None):
     """Write latest.json consumed by the React dashboard."""
     OUTPUT_JSON.parent.mkdir(parents=True, exist_ok=True)
@@ -280,6 +320,7 @@ def write_output(units, status, stale=False, stale_since=None, last_sync=None):
     with open(OUTPUT_JSON, "w") as f:
         json.dump(payload, f, separators=(",", ":"))
     log.info(f"Written {OUTPUT_JSON} — {len(units)} units, status={status}")
+    update_html_payload(status, stale, last_sync)
 
 
 def load_existing_json():
@@ -292,6 +333,47 @@ def load_existing_json():
             pass
     return None
 
+
+
+def load_daily_history():
+    if DAILY_JSON.exists():
+        try:
+            with open(DAILY_JSON) as f:
+                return __import__("json").load(f)
+        except Exception:
+            pass
+    return {}
+
+def save_daily_history(history):
+    from datetime import timedelta
+    DAILY_JSON.parent.mkdir(parents=True, exist_ok=True)
+    cutoff = (datetime.utcnow().date() - timedelta(days=3650)).isoformat()
+    pruned = {s: {d:v for d,v in ds.items() if d>=cutoff} for s,ds in history.items()}
+    with open(DAILY_JSON, "w") as f:
+        __import__("json").dump(pruned, f, separators=(",",":"))
+
+def build_daily_per_unit(unit_meters, daily_history):
+    result = {}
+    for unit, meters in unit_meters.items():
+        daily = {}
+        for mtype in ("dhw", "dcw"):
+            meter = meters.get(mtype)
+            if not meter:
+                continue
+            serial = meter.get("s", "")
+            hist = daily_history.get(serial, {})
+            dates = sorted(hist.keys())
+            key = "dh" if mtype == "dhw" else "dc"
+            for i, d in enumerate(dates):
+                prev_d = dates[i-1] if i > 0 else None
+                cum_today = hist[d]
+                cum_prev = hist[prev_d] if prev_d else None
+                consumption = round(max(0.0, cum_today - cum_prev), 4) if cum_prev is not None else 0.0
+                if d not in daily:
+                    daily[d] = {"dh": 0.0, "dc": 0.0}
+                daily[d][key] = consumption
+        result[unit] = daily
+    return result
 
 def run(force=False):
     log.info("=" * 60)
@@ -372,6 +454,19 @@ def run(force=False):
         return
 
     # ── Write output ─────────────────────────────────────────────
+    today_str = datetime.utcnow().date().isoformat()
+    daily_history = load_daily_history()
+    for unit in units:
+        for serial, cum in [(unit.get("dh_s"), unit.get("dh_cur")), (unit.get("dc_s"), unit.get("dc_cur"))]:
+            if serial and cum is not None and cum > 0:
+                if serial not in daily_history:
+                    daily_history[serial] = {}
+                daily_history[serial][today_str] = cum
+    save_daily_history(daily_history)
+    unit_meters_map = {u["u"]: {"dhw":{"s":u.get("dh_s","")},"dcw":{"s":u.get("dc_s","")}} for u in units}
+    daily_per_unit = build_daily_per_unit(unit_meters_map, daily_history)
+    for unit in units:
+        unit["daily"] = daily_per_unit.get(unit["u"], {})
     now_iso = datetime.utcnow().isoformat() + "Z"
     write_output(units, status="ok", stale=False, last_sync=now_iso)
     log.info("Sync complete ✓")
